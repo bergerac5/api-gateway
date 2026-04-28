@@ -29,7 +29,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         ex.printStackTrace(); // Log the error for debugging
-        String message = "Opps! Something went wrong";
+        String message = "Opps! Something went wrong on the server api gateway";
 
         if (ex instanceof ExpiredJwtException) {
             status = HttpStatus.UNAUTHORIZED;
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             message = "Invalid token";
         } else if (ex instanceof MissingRoleClaimException) {
             status = HttpStatus.FORBIDDEN;
-            message = ex.getMessage();
+            message = "Missing role claim in JWT";
         } else if (ex instanceof NoResourceFoundException) {
             status = HttpStatus.NOT_FOUND;
             message = "Route not found: " + ex.getMessage();

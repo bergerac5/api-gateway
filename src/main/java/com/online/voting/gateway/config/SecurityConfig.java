@@ -45,8 +45,23 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/login", "/auth/register").permitAll()
-                        .pathMatchers("/elections/**").hasRole("ADMIN")
+                        .pathMatchers("/auth/login", "/auth/register", "/elections/{electionId}", "/elections/bulk",
+                                "positions/{positionId}", "/positions/{positionId}, /positions/bulk")
+                        .permitAll()
+                        // endpoints accessible by ADMIN only on election management
+                        .pathMatchers("/elections/createPosition",
+                                "/elections/updateElection/{electionId}",
+                                "/elections/deleteElection/{electionId}",
+                                "/elections/{electionId}/status")
+                        .hasRole("ADMIN")
+                        // ADMIN only on election management endpoints
+                        .pathMatchers(
+                                "/elections/createPosition",
+                                "/elections/updateElection/{electionId}",
+                                "/elections/deleteElection/{electionId}",
+                                "/elections/{electionId}/status")
+                        .hasRole("ADMIN")
+
                         .pathMatchers("/candidates/**").hasAnyRole("ADMIN", "CANDIDATE")
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
