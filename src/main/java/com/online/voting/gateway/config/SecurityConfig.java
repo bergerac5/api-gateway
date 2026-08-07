@@ -25,48 +25,51 @@ import reactor.core.publisher.Mono;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    @Value("${spring.security.oauth2.resourceserver.jwt.secret}")
-    private String secretKey;
+        @Value("${spring.security.oauth2.resourceserver.jwt.secret}")
+        private String secretKey;
 
-    private final Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter;
+        private final Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter;
 
-    public SecurityConfig(Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter) {
-        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
-    }
+        public SecurityConfig(Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter) {
+                this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+        }
 
-    @Bean
-    public ReactiveJwtDecoder reactiveJwtDecoder() {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        return NimbusReactiveJwtDecoder.withSecretKey(key).build();
-    }
+        @Bean
+        public ReactiveJwtDecoder reactiveJwtDecoder() {
+                SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+                return NimbusReactiveJwtDecoder.withSecretKey(key).build();
+        }
 
-    @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/login", "/auth/register", "/elections/{electionId}", "/elections/bulk",
-                                "positions/{positionId}", "/positions/{positionId}, /positions/bulk")
-                        .permitAll()
-                        // endpoints accessible by ADMIN only on election management
-                        .pathMatchers("/elections/createPosition",
-                                "/elections/updateElection/{electionId}",
-                                "/elections/deleteElection/{electionId}",
-                                "/elections/{electionId}/status")
-                        .hasRole("ADMIN")
-                        // ADMIN only on election management endpoints
-                        .pathMatchers(
-                                "/elections/createPosition",
-                                "/elections/updateElection/{electionId}",
-                                "/elections/deleteElection/{electionId}",
-                                "/elections/{electionId}/status")
-                        .hasRole("ADMIN")
+        @Bean
+        public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+                return http
+                                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                                .authorizeExchange(exchange -> exchange
+                                                .pathMatchers("/auth/login", "/auth/register",
+                                                                "/elections/{electionId}", "/elections/bulk",
+                                                                "positions/{positionId}",
+                                                                "/positions/{positionId}, /positions/bulk")
+                                                .permitAll()
+                                                // endpoints accessible by ADMIN only on election management
+                                                .pathMatchers("/elections/createPosition",
+                                                                "/elections/updateElection/{electionId}",
+                                                                "/elections/deleteElection/{electionId}",
+                                                                "/elections/{electionId}/status")
+                                                .hasRole("ADMIN")
+                                                // ADMIN only on election management endpoints
+                                                .pathMatchers(
+                                                                "/elections/createPosition",
+                                                                "/elections/updateElection/{electionId}",
+                                                                "/elections/deleteElection/{electionId}",
+                                                                "/elections/{electionId}/status")
+                                                .hasRole("ADMIN")
 
-                        .pathMatchers("/candidates/**").hasAnyRole("ADMIN", "CANDIDATE")
-                        .anyExchange().authenticated())
-                .oauth2ResourceServer(oauth -> oauth
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter)))
-                .build();
-    }
+                                                .pathMatchers("/candidates/**").hasAnyRole("ADMIN", "CANDIDATE")
+                                                .anyExchange().authenticated())
+                                .oauth2ResourceServer(oauth -> oauth
+                                                .jwt(jwt -> jwt
+                                                                .jwtAuthenticationConverter(
+                                                                                jwtAuthenticationConverter)))
+                                .build();
+        }
 }
