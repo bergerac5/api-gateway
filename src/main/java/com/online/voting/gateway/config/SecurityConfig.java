@@ -47,8 +47,8 @@ public class SecurityConfig {
                                 .authorizeExchange(exchange -> exchange
                                                 .pathMatchers("/auth/login", "/auth/register",
                                                                 "/elections/{electionId}", "/elections/bulk",
-                                                                "positions/{positionId}",
-                                                                "/positions/{positionId}, /positions/bulk")
+                                                                "positions/{positionId}", " /positions/bulk",
+                                                                "/candidates/{candidateId}", "/candidates/bulk")
                                                 .permitAll()
                                                 // endpoints accessible by ADMIN only on election management
                                                 .pathMatchers("/elections/createPosition",
@@ -64,7 +64,8 @@ public class SecurityConfig {
                                                                 "/elections/{electionId}/status")
                                                 .hasRole("ADMIN")
 
-                                                .pathMatchers("/candidates/**").hasAnyRole("ADMIN", "CANDIDATE")
+                                                .pathMatchers("/candidates/**")
+                                                .hasAnyRole("ADMIN", "CANDIDATE")
                                                 .anyExchange().authenticated())
                                 .oauth2ResourceServer(oauth -> oauth
                                                 .jwt(jwt -> jwt
