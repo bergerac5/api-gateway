@@ -50,6 +50,10 @@ public class SecurityConfig {
                                                                 "positions/{positionId}", " /positions/bulk",
                                                                 "/candidates/{candidateId}", "/candidates/bulk")
                                                 .permitAll()
+                                                // endpoints accessible by ADMIN ONLY on authentication and registration
+                                                // services
+                                                .pathMatchers("/auth/users", "/auth/users/{username}")
+                                                .hasRole("ADMIN")
                                                 // endpoints accessible by ADMIN only on election management
                                                 .pathMatchers("/elections/createPosition",
                                                                 "/elections/updateElection/{electionId}",
