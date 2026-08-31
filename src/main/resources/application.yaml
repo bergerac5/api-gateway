@@ -6,34 +6,36 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/auth/**
-        - id: voter-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/voters/**
-        - id: election-service
-          uri: http://localhost:8084
-          predicates:
-            - Path=/elections/**, /positions/**, /position-candidates/**
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/auth/**
+            - id: voter-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/voters/**
+            - id: election-service
+              uri: http://localhost:8084
+              predicates:
+                - Path=/elections/**, /positions/**, /position-candidates/**
 
-        - id: candidate-service
-          uri: http://localhost:8083
-          predicates:
-            - Path=/candidates/**
-        
-        - id: voting-service
-          uri: http://localhost:8085
-          predicates:
-            - Path=/votes/**
-        
-        - id: result-service
-          uri: http://localhost:8086
-          predicates:
-            - Path="/live-results/**", "/final-results/**"
+            - id: candidate-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/candidates/**
+
+            - id: voting-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/votes/**
+
+            - id: result-service
+              uri: http://localhost:8086
+              predicates:
+                - Path="/live-results/**", "/final-results/**"
 
   security:
     oauth2:
